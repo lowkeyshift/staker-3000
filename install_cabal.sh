@@ -26,9 +26,9 @@ sudo apt-get -y install pkg-config libgmp-dev libssl-dev libtinfo-dev libsystemd
 echo "NO YES" | curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 
 # Will need version to be updated
+cd $HOME
 . "$HOME/.ghcup/env"
 echo '. $HOME/.ghcup/env' >> "$HOME/.bashrc"
-cd $HOME
 source .bashrc
 ghcup upgrade
 ghcup install cabal 3.4.0.0
