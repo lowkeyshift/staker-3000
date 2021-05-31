@@ -69,6 +69,13 @@ echo "This may take a few minutes to an hour"
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 cabal build cardano-cli cardano-node
 
+# Copy cardano-node and cardano-cli to /bin
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo "Copy cardano-node and cardano-cli to /usr/local/bin/"
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+sudo cp $(find $HOME/git/cardano-node/dist-newstyle/build -type f -name "cardano-cli") /usr/local/bin/cardano-cli
+sudo cp $(find $HOME/git/cardano-node/dist-newstyle/build -type f -name "cardano-node") /usr/local/bin/cardano-node
+
 #Configure Nodes
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo "Getting JSON files"
