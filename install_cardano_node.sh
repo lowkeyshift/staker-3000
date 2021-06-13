@@ -147,11 +147,12 @@ cd cardano-node
 git fetch --all --recurse-submodules --tags
 git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
 
-## Build options
-cabal configure -O0 -w ghc-8.10.4
-
 ## Update cabal config
 cabal configure -O0 -w ghc-8.10.4
+
+echo -e "package cardano-crypto-praos\n flags: -external-libsodium-vrf" > cabal.project.local
+sed -i $HOME/.cabal/config -e "s/overwrite-policy:/overwrite-policy: always/g"
+rm -rf $HOME/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.10.4
 
 # Build Cardano-node
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
@@ -166,16 +167,25 @@ echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 sudo cp $(find $HOME/git/cardano-node/dist-newstyle/build -type f -name "cardano-cli") /usr/local/bin/cardano-cli
 sudo cp $(find $HOME/git/cardano-node/dist-newstyle/build -type f -name "cardano-node") /usr/local/bin/cardano-node
 
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+cardano-node version
+cardano-cli version
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+
 #Configure Nodes
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo "${red}Getting JSON files"
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 mkdir $NODE_HOME
 cd $NODE_HOME
-wget -N https://hydra.iohk.io/build/6198010/download/1/mainnet-config.json
-wget -N https://hydra.iohk.io/build/6198010/download/1/mainnet-byron-genesis.json
-wget -N https://hydra.iohk.io/build/6198010/download/1/mainnet-shelley-genesis.json
-wget -N https://hydra.iohk.io/build/6198010/download/1/mainnet-topology.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-byron-genesis.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-topology.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-shelley-genesis.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-config.json
 
 #Update TraceBlockFetchDecisions to true
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
@@ -217,5 +227,45 @@ echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo "To start your ${node_type} run the following command: "
 echo -e "${green}sudo systemctl start cardano-node\n"
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo -e "${red} contiue the install process by deploying your air-gapped offline machine"
+echo "Script was built using this documentation: "
+echo "https://www.coincashew.com/coins/overview-ada/guide-how-to-build-a-haskell-stakepool-node#6-configure-the-air-gapped-offline-machine"
+echo "===-=====-=-==-====--===-=-====-==-=-=-=="
+echo "You are this close."
+echo "                         .aggggga,,.
+                            ,d888888888888888888888888888888888888888888888888888888P""""a,
+                           d8""                                                    `""""""8
+                         ,8"           ,_                 a,         .a ......:::::::::;dP'
+                        ,8";            8b              ..)8 ;;;;;;;;;)b;;;;;;;;;;;amd8"'
+                        8';.             88,    ...::::::;;8bagmgggg8888888PPPP"""''
+                       ]8;:    8b        ."888888888888888888""""        ..,aaaa,,.
+                      ,8';.     8b   .::::;88";;;;;d8";:;:88'       ,add88PPPPPPPP888baaa.
+                      dP;:.      "8;;;;;;a888a;aadP':;:;:8P     ,a8PPP""                ""8
+                     ]8;::.       "8a;;d8888888"';;:;:;a8"  ,ad8P"         .:.:,888888888 8)
+                    ,8";:.          "88';:;"PPP8b;;;;;88,ad8P'     ,a  I.:.:.:(8'......`8 88
+                    dP;::.            "Pba;;::::)8b:d88P"'         8 :(I:.:.:.(8::::::::8,8)
+                   (8;::..                `""P88PP""            .: 8,.(8.:.,add88888888888"
+                  ,8";:.:.                                  ..::.::"ga88888PP""'''
+                 .8";:.:..                              ..::.:,add8PP''
+                .88;::::..                           .:.:;aad8P"''
+               .88;;:.:..                        ..:.:;adP"'
+              .88;;::.:..                     ...:.:;dP"
+             .88;;:.::..                   ...:.::;d8"
+            .88;;:.:.:..                 ...:.:.;d8"
+           .88;;:.::.:.                ...:.::.;d8
+          .88;;:.::.:..              ...:.:.;;d8"
+         .88;;:.:.:.:..            ...:.::.;;88
+        ,88;;:.:.:.:...          ...:.::.:;;88
+       d8';;:.::.::.....       ....:.::.:;;88
+      88;;::.::.::........   ..:.::.::.;;d88
+    .8P;;::.::.:............:.:.:.::;;a88P"
+   dP';;::.:.:.............:..:.:;;ad8P"
+ .8P;;:.:.::..............:.:.:;d88P"
+,88;;.:.::................:.:;d8"
+88;;.:.:................:.:;d8P
+     '':::::...........:.;d8P
+           '':::::....:.;d8"
+                  '':::;d8'
+                     ':;8'"
 
 exit 0
