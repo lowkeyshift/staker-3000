@@ -100,20 +100,22 @@ echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo "${cyan}Installing GHCUP Haskell"
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 
-echo "Answer NO to installing haskell-language-server (HLS)."
-echo "Answer YES to automatically add the required PATH variable to ".bashrc"."
+echo "Answer N: when asked to installing haskell-language-server (HLS)."
+echo "Answer Y: Do you want to install stack now?"
+echo "Answer Y: To automatically add the required PATH variable to ".bashrc"."
 read -p "Press enter to continue"
 
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 
 # Will need version to be updated
 cd $HOME
-. "$HOME/.ghcup/env"
-echo '. $HOME/.ghcup/env' >> "$HOME/.bashrc"
 source .bashrc
 ghcup upgrade
 ghcup install cabal 3.4.0.0
 ghcup set cabal 3.4.0.0
+
+ghcup install ghc 8.10.4
+ghcup set ghc 8.10.4
 
 #Cluster Configuration
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
