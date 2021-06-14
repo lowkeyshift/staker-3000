@@ -15,8 +15,8 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 trap 'echo "${green}\"${last_command}\" command filed with exit code $?."' EXIT
 
 # Versions
-CABAL_VER = "3.4.0.0"
-GHC_VER = "8.10.4"
+CABAL_VER="3.4.0.0"
+GHC_VER="8.10.4"
 
   case "$1" in
     -h|--help)
