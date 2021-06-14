@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Font Colors
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -13,8 +14,13 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 # echo an error message before exiting
 trap 'echo "${green}\"${last_command}\" command filed with exit code $?."' EXIT
 
+# Versions
+CABAL_VER = "3.4.0.0"
+GHC_VER = "8.10.4"
+
   case "$1" in
     -h|--help)
+      echo "=================================================="
       echo "Cardano Node Install Script"
       echo "This is designed for the initial install."
       echo "Either 1 producer & 1 relay"
@@ -24,6 +30,7 @@ trap 'echo "${green}\"${last_command}\" command filed with exit code $?."' EXIT
       echo "-h, --help             show brief help"
       echo "-r,--relay             specify if building relay"
       echo "-p,--producer          specify if building producer"
+      echo "==================================================="
       exit 0
       ;;
     -r|--relay)
@@ -45,7 +52,25 @@ trap 'echo "${green}\"${last_command}\" command filed with exit code $?."' EXIT
 # Add IP for selected choice
 if [[ $node_type == "producer" ]]
     then
-        echo "Do you have 1 or 2 relays?"
+        echo "Is producer a testnet or mainnet deploment?: "
+        echo "T/t for testnet"
+        echo "M/m for mainnet"
+        read NET_choice
+    if [[ $NET_choice == "T" || $NET_choice == "t" ]]
+        then
+        echo "You selected testnet deploy..."
+        NODE_NET="testnet"
+    elif [[ $NET_choice == "M" || $NET_choice == "m" ]]
+        then
+        echo "You selected mainnet deploy..."
+        NODE_NET="mainnet"
+    else
+        echo "option ${NODE_choice} is incorrect or blank"
+        echo "killing script..."
+        exit 0
+    fi
+# 
+        echo "Do you have 0, 1 or 2 relays?"
         read count
     if [[ $count == 1 ]]
         then
@@ -58,11 +83,13 @@ if [[ $node_type == "producer" ]]
         echo "Enter IP of second relay?: "
         read node_second_IP
     else
-        echo "Script only supports 1 or 2 as options."
+        echo "Script only supports 0, 1 or 2 as options."
+        echo "Please open issue for feature request or improvements: "
+        echo "https://github.com/lowkeyshift/staker-3000/issues/new"
         exit 0
     fi
 else
-    echo "What is the IP of you producer?: "
+    echo "What is your producer node's IP?: "
     read node_IP
 fi
 
@@ -111,11 +138,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 cd $HOME
 source .bashrc
 ghcup upgrade
-ghcup install cabal 3.4.0.0
-ghcup set cabal 3.4.0.0
+ghcup install cabal $CABAL_VER
+ghcup set cabal $CABAL_VER
 
-ghcup install ghc 8.10.4
-ghcup set ghc 8.10.4
+ghcup install ghc $GHC_VER
+ghcup set ghc $GHC_VER
 
 #Cluster Configuration
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
@@ -125,7 +152,7 @@ echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo PATH="$HOME/.local/bin:$PATH" >> $HOME/.bashrc
 echo export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH" >> $HOME/.bashrc
 echo export NODE_HOME=$HOME/cardano-my-node >> $HOME/.bashrc
-echo export NODE_CONFIG=mainnet>> $HOME/.bashrc
+echo export NODE_CONFIG=$NODE_NET >> $HOME/.bashrc
 echo export NODE_BUILD_NUM=$(curl https://hydra.iohk.io/job/Cardano/iohk-nix/cardano-deployment/latest-finished/download/1/index.html | grep -e "build" | sed 's/.*build\/\([0-9]*\)\/download.*/\1/g') >> $HOME/.bashrc
 source $HOME/.bashrc
 
