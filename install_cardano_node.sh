@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Font Colors
 red=`tput setaf 1`
