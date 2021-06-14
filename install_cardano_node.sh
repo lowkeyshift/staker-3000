@@ -49,27 +49,28 @@ GHC_VER="8.10.4"
       ;;
     esac
 
+# Choose Mainnet or Testnet deployment
+echo "Is producer a testnet or mainnet deploment?: "
+echo "T/t for testnet"
+echo "M/m for mainnet"
+read NET_choice
+if [[ $NET_choice == "T" || $NET_choice == "t" ]]
+    then
+    echo "You selected testnet deploy..."
+    NODE_NET="testnet"
+elif [[ $NET_choice == "M" || $NET_choice == "m" ]]
+    then
+    echo "You selected mainnet deploy..."
+    NODE_NET="mainnet"
+else
+    echo "option ${NODE_choice} is incorrect or blank"
+    echo "killing script..."
+    exit 0
+fi
+# 
 # Add IP for selected choice
 if [[ $node_type == "producer" ]]
     then
-        echo "Is producer a testnet or mainnet deploment?: "
-        echo "T/t for testnet"
-        echo "M/m for mainnet"
-        read NET_choice
-    if [[ $NET_choice == "T" || $NET_choice == "t" ]]
-        then
-        echo "You selected testnet deploy..."
-        NODE_NET="testnet"
-    elif [[ $NET_choice == "M" || $NET_choice == "m" ]]
-        then
-        echo "You selected mainnet deploy..."
-        NODE_NET="mainnet"
-    else
-        echo "option ${NODE_choice} is incorrect or blank"
-        echo "killing script..."
-        exit 0
-    fi
-# 
         echo "Do you have 0, 1 or 2 relays?"
         read count
     if [[ $count == 1 ]]
