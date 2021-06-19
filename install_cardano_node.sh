@@ -152,7 +152,7 @@ echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo PATH="$HOME/.local/bin:$PATH" >> $HOME/.bashrc
 echo export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH" >> $HOME/.bashrc
 echo export NODE_HOME=$HOME/cardano-my-node >> $HOME/.bashrc
-echo export NODE_CONFIG=$NODE_NET >> $HOME/.bashrc
+echo export NODE_CONFIG="{$NODE_NET}" >> $HOME/.bashrc
 echo export NODE_BUILD_NUM=$(curl https://hydra.iohk.io/job/Cardano/iohk-nix/cardano-deployment/latest-finished/download/1/index.html | grep -e "build" | sed 's/.*build\/\([0-9]*\)\/download.*/\1/g') >> $HOME/.bashrc
 source $HOME/.bashrc
 
@@ -209,10 +209,18 @@ echo "${red}Getting JSON files"
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 mkdir $NODE_HOME
 cd $NODE_HOME
-wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-byron-genesis.json
-wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-topology.json
-wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-shelley-genesis.json
-wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-config.json
+
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_NET}-byron-genesis.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_NET}-topology.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_NET}-shelley-genesis.json
+wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_NET}-config.json
+
+if [[ $NODE_NET == "testnet" ]]
+    then
+        wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-alonzo-genesis.json
+else
+        echo "NODE_NET=\"${NODE_NET}\" is not correct."
+fi
 
 #Update TraceBlockFetchDecisions to true
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
@@ -237,7 +245,7 @@ echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 if [[ $node_type == "producer" ]] & [[ $count == 1 ]]
     then
     ./block_relay.sh $node_IP
-elif [ $node_type == "producer" ]] & [[ $count == 2 ]]
+elif [[ $node_type == "producer" ]] & [[ $count == 2 ]]
     then
     ./two_block_relay.sh $node_IP $node_second_IP
 elif [[ $node_type == "relay" ]]
@@ -259,7 +267,8 @@ echo "Script was built using this documentation: "
 echo "https://www.coincashew.com/coins/overview-ada/guide-how-to-build-a-haskell-stakepool-node#6-configure-the-air-gapped-offline-machine"
 echo "===-=====-=-==-====--===-=-====-==-=-=-=="
 echo "You are this close."
-echo "                         .aggggga,,.
+cat<<'EOF'
+                                     .aggggga,,.
                             ,d888888888888888888888888888888888888888888888888888888P""""a,
                            d8""                                                    `""""""8
                          ,8"           ,_                 a,         .a ......:::::::::;dP'
@@ -295,4 +304,5 @@ echo "                         .aggggga,,.
                   '':::;d8'
                      ':;8'"
 
+EOF
 exit 0
